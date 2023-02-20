@@ -1,25 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { v4 as uuidv4 } from 'uuid';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Header from "./Components/Header";
+import FeedbackList from "./Components/FeedbackList";
+import FeedbackStats from "./Components/FeedbackStats";
+import FeedbackData from "./data/FeedbackData";
+import FeedbackForm from "./Components/FeedbackForm";
+import AboutPage from "./pages/AboutPage";
+import AboutIcon from "./Components/AboutIcon";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+    const [feedback, setFeedback] = useState(FeedbackData);
+
+    const addFeedback = (newFeeback) => {
+        newFeeback.id = uuidv4();
+        setFeedback([ newFeeback, ...feedback]);
+    };
+
+    const deleteFeedback = (id) => {
+        if (window.confirm('Delete Permentaly')) {
+            setFeedback(feedback.filter((item) => item.id !== id ));
+        }
+    };
+
+    return (
+       <Router>
+            <Header />
+                <div className="container">
+                    <Routes>
+                        <Route exact path="/" element={
+                            <> 
+                                <FeedbackForm handleAdd={addFeedback} />
+                                <FeedbackStats  feedback={feedback} />
+                                <FeedbackList feedback={feedback} handleDelete={deleteFeedback} />
+                            </>
+                        }>
+
+                        </Route>
+                        <Route path='/about' element={<AboutPage />} />
+                    </Routes>
+
+                    <AboutIcon />
+                </div>
+        </Router>
+    )
+
+};
 
 export default App;
